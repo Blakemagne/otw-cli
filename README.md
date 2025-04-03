@@ -7,8 +7,9 @@
 - 🔐 Save and retrieve passwords by level
 - 📝 Open Markdown notes per level
 - 📂 Organized by game (`bandit`, `natas`, `leviathan`, etc.)
-- 🚀 SSH directly into a level (with `sshpass`)
+- 🚀 Secure SSH launch with password guidance (no `sshpass`)
 - ☁️ Git push your notes and password progress (optional)
+- 🔧 Configurable vault location with zero dependencies
 
 ---
 
@@ -20,31 +21,27 @@ cd otw-cli
 pip install -e .
 ```
 
-> Make sure you have your `otw-wargame-passwords` repo located at:
-> `~/workspace/github.com/Blakemagne/otw-wargame-passwords`
+> Then configure your vault path:
+```bash
+otw config ~/Documents/otw-wargame-passwords
+```
 
 ---
 
-## 📁 Folder Structure (expected)
+## 🗂 Folder Structure (expected)
 
 ```
-~/workspace/github.com/Blakemagne/otw-wargame-passwords/
+~/Documents/otw-wargame-passwords/
 ├── bandit/
 │   ├── level0.txt
 │   ├── level0.md
 │   └── ...
-├── leviathan/
-│   └── level0.txt
+├── narnia/
+│   └── level1.txt
 └── ...
 ```
 
 ---
-
-
-
-
-otw ssh bandit 3
-otw push bandit
 
 ## 🧪 Usage
 
@@ -68,15 +65,102 @@ otw note bandit 3
 otw ls bandit
 ```
 
-### 🔐 SSH into level (requires `sshpass`)
+### 🔐 SSH into level
 ```bash
 otw ssh bandit 3
 ```
 
 ### ☁️ Git push notes and passwords
 ```bash
-otw bandit push
+otw push bandit
 ```
+
+---
+
+## 🚀 First-Time Setup: Starting from Level 0
+
+If you're just getting started with **Bandit Level 0**, and haven't created your password vault yet, follow this workflow:
+
+### 🛠️ 1. Create Your Vault Directory
+
+You can either:
+
+- **Clone a private Git repo** to store your passwords and notes:
+  ```bash
+  git clone git@github.com:yourusername/otw-wargame-passwords.git
+  ```
+
+- **Or create a local directory manually**:
+  ```bash
+  mkdir -p ~/Documents/otw-wargame-passwords
+  cd ~/Documents/otw-wargame-passwords
+  git init
+  ```
+
+> 🧠 Tip: Keep this repo **private** — it will contain your OverTheWire passwords.
+
+### 🔧 2. Configure `otw` to point to your vault
+
+Tell `otw` where your vault is:
+
+```bash
+otw config ~/Documents/otw-wargame-passwords
+```
+
+This creates a config file at:
+```
+~/.config/otw/config
+```
+
+With:
+```
+base_dir=/home/youruser/Documents/otw-wargame-passwords
+```
+
+### ✅ 3. Start Logging Progress
+
+Now you're ready to use the CLI:
+
+```bash
+otw save bandit 0 ZjLjTmM6FvvyRnrb2rfNWOZOTa6ip5If
+otw note bandit 0
+```
+
+These commands will:
+- Automatically create the `bandit/` folder (if needed)
+- Save your password as `level0.txt`
+- Create an editable Markdown file for your notes: `level0.md`
+
+### ☁️ 4. Push to GitHub (optional)
+
+If your vault is a Git repo:
+
+```bash
+otw push bandit
+```
+
+This runs:
+- `git add .`
+- `git commit -m "Progress update ..."`
+- `git push origin main`
+
+So your notes and passwords stay synced.
+
+### 🚨 What if you skip config?
+
+If you try to use the tool before configuring:
+
+```bash
+otw save bandit 0 hunter2
+```
+
+You’ll get:
+
+```
+❌ Config file not found. Run: otw config <path-to-vault>
+```
+
+No crash. Just guidance.
 
 ---
 
@@ -95,36 +179,38 @@ otw bandit push
 - `drifter`
 - `formulaone`
 
-> Don’t see your favorite game? [Submit a pull request](https://github.com/yourusername/otw-cli/pulls) or edit the `WARGAMES` list in `cli.py`.
+> Don’t see your favorite game? Edit the `WARGAMES` list in `cli.py`.
 
 ---
 
-## 📥 Requirements
+## 💻 Requirements
 
 - Python 3.7+
-- `sshpass` (for `ssh` command)
-- `git` (if you use `push`)
+- OpenSSH client (`ssh`)
+- `git` (for version control)
 
 ---
 
-## 🧪 Tips
+## 🧠 Tips
 
-- Set your default editor with:
+- Set your default note editor:
   ```bash
   export EDITOR=vim   # or nano, code, etc.
   ```
-- Keep your password repo private and version-controlled.
+- Store your repo safely with GitHub, GitLab, or your own backup
+- Keep it private, but portable
 
 ---
 
 ## 🧑‍💻 Author
 
 **Blakemagne**  
-Wargame optimizer | Builder of tools for focused hacking workflows
+Builder of focused CLI workflows | CTF optimizer | Tools for thinking
 
 ---
 
-## ⛨ Disclaimer
+## 🛡 Disclaimer
 
-This tool is intended for ethical hacking and CTF use only. Respect the rules of each wargame and never reuse passwords from these challenges elsewhere.
+This tool is intended for ethical hacking and CTF use only. Never reuse OverTheWire credentials outside of practice environments.
+
 
