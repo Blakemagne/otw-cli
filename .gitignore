@@ -1,2 +1,36 @@
-/venv
-/otw_cli.egg-info
+# 🐍 Python cache & metadata
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+*.pyo
+
+# 🔧 Virtual environments
+venv/
+.env/
+.venv/
+
+# 📦 Package-related
+dist/
+build/
+*.log
+
+# 🧪 Test coverage
+.coverage
+.cache/
+.tox/
+
+# 🛠 Tool settings
+*.swp
+*.swo
+*.bak
+.DS_Store
+
+# 🖥 IDEs & editors
+.vscode/
+.idea/
+*.code-workspace
+
+# 🚫 Local only configs
+.env.local
+*.sqlite3

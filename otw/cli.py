@@ -85,14 +85,40 @@ def ssh_to_game(game, level):
 
 # ☁️ Git push changes
 def git_push(game):
-    game_path = game_dir(game)
-    try:
-        subprocess.run(["git", "-C", game_path, "add", "."], check=True)
-        subprocess.run(["git", "-C", game_path, "commit", "-m", f"Progress update {datetime.now()}"], check=True)
-        subprocess.run(["git", "-C", game_path, "push", "origin", "main"], check=True)
-        print(f"✅ Pushed changes for {game}")
-    except subprocess.CalledProcessError:
-        print("❌ Git push failed. Is this a git repo with a remote?")
+    vault = load_config()
+    os.chdir(vault)
+
+    if game == "all":
+        subprocess.run(["git", "add", "."], check=True)
+        result = subprocess.run(["git", "diff", "--cached", "--name-only"], capture_output=True, text=True)
+        files = result.stdout.strip().split("\n")
+        levels = set()
+        for f in files:
+            if "/" in f and "level" in f:
+                parts = f.split("/")
+                if len(parts) >= 2:
+                    game = parts[0]
+                    level = parts[1].split(".")[0]
+                    levels.add(f"{game} {level}")
+        if levels:
+            msg = "🔐 Progress: " + ", ".join(sorted(levels))
+        else:
+            msg = f"📦 Updated vault – {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+        subprocess.run(["git", "commit", "-m", msg])
+    else:
+        game_path = game_dir(game)
+        subprocess.run(["git", "add", game], check=True)
+        subprocess.run(["git", "commit", "-m", f"Progress update {game} – {datetime.now()}"], check=True)
+
+    subprocess.run(["git", "push", "origin", "main"], check=True)
+    print(f"✅ Pushed changes for {game}")
+
+# ☁️ Git pull changes
+def git_pull(game):
+    vault = load_config()
+    os.chdir(vault)
+    subprocess.run(["git", "pull", "origin", "main"], check=True)
+    print("✅ Pulled latest changes from GitHub")
 
 # 🧭 Save config
 def save_config(base_dir):
@@ -134,7 +160,11 @@ def main():
 
     # push
     push_cmd = subparsers.add_parser("push", help="Git push changes for a game")
-    push_cmd.add_argument("game", choices=WARGAMES)
+    push_cmd.add_argument("game", help="Game name or 'all'")
+
+    # pull
+    pull_cmd = subparsers.add_parser("pull", help="Git pull latest from GitHub")
+    pull_cmd.add_argument("game", help="Game name or 'all'")
 
     # config
     config_cmd = subparsers.add_parser("config", help="Set base directory for your password vault")
@@ -155,6 +185,8 @@ def main():
             ssh_to_game(args.game, args.level)
         case "push":
             git_push(args.game)
+        case "pull":
+            git_pull(args.game)
         case "config":
             save_config(args.base_dir)
 
