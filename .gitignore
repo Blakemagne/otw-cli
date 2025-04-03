@@ -1,6 +1,7 @@
 # 🐍 Python cache & metadata
 __pycache__/
 *.py[cod]
+otw_cli.egg-info/
 *.egg-info/
 .eggs/
 *.pyo

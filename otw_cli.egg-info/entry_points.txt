@@ -1,2 +1,0 @@
-[console_scripts]
-otw = otw.cli:main
