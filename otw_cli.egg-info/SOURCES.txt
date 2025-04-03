@@ -1,0 +1,9 @@
+README.md
+setup.py
+otw/__init__.py
+otw/cli.py
+otw_cli.egg-info/PKG-INFO
+otw_cli.egg-info/SOURCES.txt
+otw_cli.egg-info/dependency_links.txt
+otw_cli.egg-info/entry_points.txt
+otw_cli.egg-info/top_level.txt
