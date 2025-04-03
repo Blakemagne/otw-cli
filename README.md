@@ -40,31 +40,37 @@ pip install -e .
 
 ---
 
+
+
+
+otw ssh bandit 3
+otw push bandit
+
 ## 🧪 Usage
 
 ### 📥 Save a password
 ```bash
-otw bandit save 3 abc123
+otw save bandit 3 abc123
 ```
 
 ### 🔓 Show a saved password
 ```bash
-otw bandit pw 3
+otw pw bandit 3
 ```
 
 ### 📝 Open notes (Markdown)
 ```bash
-otw bandit note 3
+otw note bandit 3
 ```
 
 ### 📜 List saved levels
 ```bash
-otw bandit ls
+otw ls bandit
 ```
 
 ### 🔐 SSH into level (requires `sshpass`)
 ```bash
-otw bandit ssh 3
+otw ssh bandit 3
 ```
 
 ### ☁️ Git push notes and passwords
