@@ -167,6 +167,8 @@ No crash. Just guidance.
 ## ✅ Supported Games
 
 - `bandit`
+
+## ❌ Currenly Unsupported
 - `natas`
 - `leviathan`
 - `krypton`
