@@ -190,92 +190,6 @@ No crash. Just guidance.
 - `git` (for version control)
 
 ---
-# 🚀 First-Time Setup: Starting from Level 0
-
-If you're just getting started with **Bandit Level 0**, and haven't created your password vault yet, follow this workflow:
-
-### 🛠️ 1. Create Your Vault Directory
-
-You can either:
-
-- **Clone a private Git repo** to store your passwords and notes:
-  ```bash
-  git clone git@github.com:yourusername/otw-wargame-passwords.git
-  ```
-
-- **Or create a local directory manually**:
-  ```bash
-  mkdir -p ~/Documents/otw-wargame-passwords
-  cd ~/Documents/otw-wargame-passwords
-  git init
-  ```
-
-> 🧠 Tip: Keep this repo **private** — it will contain your OverTheWire passwords.
-
-### 🔧 2. Configure `otw` to point to your vault
-
-Tell `otw` where your vault is:
-
-```bash
-otw config ~/Documents/otw-wargame-passwords
-```
-
-This creates a config file at:
-```
-~/.config/otw/config
-```
-
-With:
-```
-base_dir=/home/youruser/Documents/otw-wargame-passwords
-```
-
-### ✅ 3. Start Logging Progress
-
-Now you're ready to use the CLI:
-
-```bash
-otw save bandit 0 ZjLjTmM6FvvyRnrb2rfNWOZOTa6ip5If
-otw note bandit 0
-```
-
-These commands will:
-- Automatically create the `bandit/` folder (if needed)
-- Save your password as `level0.txt`
-- Create an editable Markdown file for your notes: `level0.md`
-
-### ☁️ 4. Push to GitHub (optional)
-
-If your vault is a Git repo:
-
-```bash
-otw push bandit
-```
-
-This runs:
-- `git add .`
-- `git commit -m "Progress update ..."`
-- `git push origin main`
-
-So your notes and passwords stay synced.
-
-### 🚨 What if you skip config?
-
-If you try to use the tool before configuring:
-
-```bash
-otw save bandit 0 hunter2
-```
-
-You’ll get:
-
-```
-❌ Config file not found. Run: otw config <path-to-vault>
-```
-
-No crash. Just guidance.
-
----
 
 ## 🔗 Global CLI Access (Without Activating Virtualenv)
 
@@ -339,16 +253,11 @@ From **anywhere**, even without activating the virtualenv.
 
 ---
 
-
 ## 🧑‍💻 Author
 
 **Blakemagne**  
 stonks god
 
 ---
-
-## 🛡 Disclaimer
-
-This tool is intended for UNethical hacking and CTF use only. ALWAYS reuse OverTheWire credentials outside of practice environments.
 
 
