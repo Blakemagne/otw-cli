@@ -47,32 +47,32 @@ otw config ~/Documents/otw-wargame-passwords
 
 ### 📥 Save a password
 ```bash
-otw save bandit 3 abc123
+otw save <wargame> <level> <password>
 ```
 
 ### 🔓 Show a saved password
 ```bash
-otw pw bandit 3
+otw pw <wargame> <level> 
 ```
 
 ### 📝 Open notes (Markdown)
 ```bash
-otw note bandit 3
+otw note <wargame> <level> 
 ```
 
 ### 📜 List saved levels
 ```bash
-otw ls bandit
+otw ls <wargame>
 ```
 
 ### 🔐 SSH into level
 ```bash
-otw ssh bandit 3
+otw ssh <wargame> <level> 
 ```
 
 ### ☁️ Git push notes and passwords
 ```bash
-otw push bandit
+otw push <wargame>
 ```
 
 ---
@@ -151,7 +151,7 @@ So your notes and passwords stay synced.
 If you try to use the tool before configuring:
 
 ```bash
-otw save bandit 0 hunter2
+otw save <wargame> <level> <password>
 ```
 
 You’ll get:
