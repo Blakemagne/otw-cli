@@ -340,18 +340,6 @@ From **anywhere**, even without activating the virtualenv.
 ---
 
 
-
-## 🧠 More Tips
-
-- Set your default note editor:
-  ```bash
-  export EDITOR=vim   # or nano, code, etc.
-  ```
-- Store your repo safely with GitHub, GitLab, or your own backup
-- Keep it private, but portable
-
----
-
 ## 🧑‍💻 Author
 
 **Blakemagne**  
