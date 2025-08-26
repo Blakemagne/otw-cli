@@ -12,6 +12,24 @@ WARGAMES = [
     "utumno", "maze", "vortex", "manpage", "drifter", "formulaone"
 ]
 
+# 🔌 SSH port configuration for each game
+SSH_PORTS = {
+    "bandit": 2220,
+    "leviathan": 2223,
+    "narnia": 2226,
+    "behemoth": 2221,
+    "utumno": 2227,
+    "maze": 2225,
+    "manpage": 2224,
+    "formulaone": 2232,
+    "vortex": 2228,
+    "drifter": 2230,
+    "krypton": 2231,
+}
+
+# 🌐 Non-SSH games (web-based)
+WEB_GAMES = ["natas"]
+
 # 📄 Load BASE_DIR from config file
 def load_config():
     config_file = os.path.expanduser("~/.config/otw/config")
@@ -65,22 +83,65 @@ def list_levels(game):
     for f in files:
         print(f)
 
-# 🔐 Secure SSH (manual password entry)
+# 📊 Show current status for all games
+def show_status():
+    vault = load_config()
+    has_progress = False
+    
+    for game in WARGAMES:
+        directory = game_dir(game)
+        if os.path.exists(directory):
+            # Find all password files (level*.txt)
+            files = [f for f in os.listdir(directory) if f.startswith("level") and f.endswith(".txt")]
+            if files:
+                # Extract level numbers and find the highest
+                levels = []
+                for f in files:
+                    try:
+                        level_num = int(f[5:-4])  # Extract number from "levelN.txt"
+                        levels.append(level_num)
+                    except ValueError:
+                        continue
+                
+                if levels:
+                    max_level = max(levels)
+                    print(f"🎮 {game}: Level {max_level}")
+                    has_progress = True
+    
+    if not has_progress:
+        print("⚠️ No progress saved yet. Start with: otw save <game> <level> <password>")
+
+# 🔐 Secure SSH with automatic clipboard copy via fip
 def ssh_to_game(game, level):
+    # Check if game uses SSH
+    if game in WEB_GAMES:
+        print(f"❌ {game} is a web-based game and doesn't use SSH.")
+        print(f"💡 Access {game} at: http://{game}{level}.{game}.labs.overthewire.org")
+        return
+    
+    if game not in SSH_PORTS:
+        print(f"⚠️ SSH port not configured for {game}. This game might not support SSH.")
+        return
+
     path = pw_path(game, level)
     if not os.path.exists(path):
         print(f"❌ No password found for {game} level {level}")
         return
 
-    with open(path) as f:
-        pw = f.read().strip()
+    # Run otw pw | fip in background to copy password to clipboard
+    try:
+        # Use shell=True to enable piping
+        subprocess.Popen(f"otw pw {game} {level} | fip", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print(f"📋 Password copied to clipboard!")
+    except Exception:
+        # If fip fails, just continue - password will be shown anyway
+        pass
 
     user = f"{game}{level}"
     host = f"{game}.labs.overthewire.org"
-    port = "2220"
-
-    print(f"\n🔑 Password for {user}: {pw}")
-    print(f"👉 Starting SSH session (copy & paste password when prompted):\n")
+    port = str(SSH_PORTS[game])
+    
+    print(f"👉 Starting SSH session to {user}@{host} on port {port}...\n")
     subprocess.run(["ssh", f"{user}@{host}", "-p", port])
 
 # ☁️ Git push changes
@@ -130,45 +191,117 @@ def save_config(base_dir):
 
 # 🚀 Entry Point
 def main():
-    parser = argparse.ArgumentParser(description="OTW Wargame CLI")
-    subparsers = parser.add_subparsers(dest="command", required=True)
+    parser = argparse.ArgumentParser(
+        description="🎮 OTW CLI - Your OverTheWire Wargame Companion\n\nManage passwords and notes for OverTheWire wargames with ease!",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""📚 EXAMPLES:
+  Getting Started:
+    otw config ~/Documents/otw-vault      # Set up your password vault
+    otw save bandit 0 password123         # Save your first password
+    otw note bandit 0                     # Write notes about the level
+    otw ssh bandit 1                      # SSH to next level (auto-copies password)
+
+  Track Progress:
+    otw status                             # See your progress in all games
+    otw ls bandit                          # List all saved bandit levels
+    otw pw bandit 5                        # Show password for bandit level 5
+
+  Sync with Git:
+    otw push bandit                        # Push bandit progress to GitHub
+    otw pull all                           # Pull latest changes from GitHub
+
+🎯 GAME PROGRESSION:
+  bandit → natas → leviathan → krypton → narnia → behemoth → ...
+
+💡 TIP: Start with 'otw config' to set up your vault location!
+        """
+    )
+    subparsers = parser.add_subparsers(dest="command", required=True, help="Available commands")
 
     # save
-    save_cmd = subparsers.add_parser("save", help="Save a password")
-    save_cmd.add_argument("game", choices=WARGAMES)
-    save_cmd.add_argument("level")
-    save_cmd.add_argument("password")
+    save_cmd = subparsers.add_parser(
+        "save", 
+        help="💾 Save a password for a game level",
+        description="Save a password for a specific game and level.\nCreates the game directory if it doesn't exist.",
+        epilog="Example: otw save bandit 5 'UsvVyFSfZZWbi6wgC7dAFyFuR6jQQUhR'"
+    )
+    save_cmd.add_argument("game", choices=WARGAMES, help="The wargame name")
+    save_cmd.add_argument("level", help="Level number (e.g., 0, 1, 2...)")
+    save_cmd.add_argument("password", help="The password to save")
 
     # pw
-    pw_cmd = subparsers.add_parser("pw", help="Show saved password")
-    pw_cmd.add_argument("game", choices=WARGAMES)
-    pw_cmd.add_argument("level")
+    pw_cmd = subparsers.add_parser(
+        "pw", 
+        help="🔑 Show saved password for a level",
+        description="Display the saved password for a specific game and level.",
+        epilog="Example: otw pw bandit 5\nTip: Pipe to fip for clipboard: otw pw bandit 5 | fip"
+    )
+    pw_cmd.add_argument("game", choices=WARGAMES, help="The wargame name")
+    pw_cmd.add_argument("level", help="Level number")
 
     # note
-    note_cmd = subparsers.add_parser("note", help="Edit level notes")
-    note_cmd.add_argument("game", choices=WARGAMES)
-    note_cmd.add_argument("level")
+    note_cmd = subparsers.add_parser(
+        "note", 
+        help="📝 Edit notes for a level (opens editor)",
+        description="Open your default editor to write/edit Markdown notes for a level.",
+        epilog="Example: otw note bandit 5\nTip: Set $EDITOR environment variable to use your preferred editor"
+    )
+    note_cmd.add_argument("game", choices=WARGAMES, help="The wargame name")
+    note_cmd.add_argument("level", help="Level number")
 
     # ls
-    ls_cmd = subparsers.add_parser("ls", help="List saved levels")
-    ls_cmd.add_argument("game", choices=WARGAMES)
+    ls_cmd = subparsers.add_parser(
+        "ls", 
+        help="📋 List all saved levels for a game",
+        description="Show all levels with saved passwords for a specific game.",
+        epilog="Example: otw ls bandit"
+    )
+    ls_cmd.add_argument("game", choices=WARGAMES, help="The wargame name")
 
     # ssh
-    ssh_cmd = subparsers.add_parser("ssh", help="Secure SSH into level (manual password entry)")
-    ssh_cmd.add_argument("game", choices=WARGAMES)
-    ssh_cmd.add_argument("level")
+    ssh_cmd = subparsers.add_parser(
+        "ssh", 
+        help="🔐 SSH into a level (auto-copies password)",
+        description="Connect to a wargame level via SSH.\nAutomatically copies password to clipboard using fip.",
+        epilog="Example: otw ssh bandit 5\nNote: Paste password when prompted by SSH"
+    )
+    ssh_cmd.add_argument("game", choices=WARGAMES, help="The wargame name")
+    ssh_cmd.add_argument("level", help="Level number")
 
     # push
-    push_cmd = subparsers.add_parser("push", help="Git push changes for a game")
-    push_cmd.add_argument("game", help="Game name or 'all'")
+    push_cmd = subparsers.add_parser(
+        "push", 
+        help="⬆️  Push your progress to GitHub",
+        description="Commit and push your passwords/notes to a Git repository.",
+        epilog="Examples:\n  otw push bandit    # Push only bandit progress\n  otw push all       # Push all changes"
+    )
+    push_cmd.add_argument("game", help="Game name or 'all' for everything")
 
     # pull
-    pull_cmd = subparsers.add_parser("pull", help="Git pull latest from GitHub")
-    pull_cmd.add_argument("game", help="Game name or 'all'")
+    pull_cmd = subparsers.add_parser(
+        "pull", 
+        help="⬇️  Pull latest changes from GitHub",
+        description="Pull the latest passwords/notes from your Git repository.",
+        epilog="Example: otw pull all"
+    )
+    pull_cmd.add_argument("game", help="Game name or 'all' (currently only 'all' works)")
 
     # config
-    config_cmd = subparsers.add_parser("config", help="Set base directory for your password vault")
-    config_cmd.add_argument("base_dir", help="Path to your vault (e.g., ~/Documents/otw-vault)")
+    config_cmd = subparsers.add_parser(
+        "config", 
+        help="⚙️  Configure your password vault location",
+        description="Set the base directory where passwords and notes will be stored.\nRun this first to set up OTW CLI!",
+        epilog="Example: otw config ~/Documents/otw-vault\nTip: Use a Git repository for easy syncing"
+    )
+    config_cmd.add_argument("base_dir", help="Path to your vault directory")
+
+    # status
+    status_cmd = subparsers.add_parser(
+        "status", 
+        help="📊 Show your progress across all games",
+        description="Display the highest level reached in each wargame based on saved passwords.",
+        epilog="Example: otw status"
+    )
 
     # Dispatch
     args = parser.parse_args()
@@ -189,6 +322,8 @@ def main():
             git_pull(args.game)
         case "config":
             save_config(args.base_dir)
+        case "status":
+            show_status()
 
 if __name__ == "__main__":
     main()

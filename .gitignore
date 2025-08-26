@@ -35,3 +35,9 @@ build/
 # 🚫 Local only configs
 .env.local
 *.sqlite3
+CLAUDE.md
+
+# 🔐 Password vaults (NEVER commit these!)
+otw_wargame_passwords/
+otw-wargame-passwords/
+*_passwords/

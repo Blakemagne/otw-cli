@@ -7,7 +7,8 @@
 - 🔐 Save and retrieve passwords by level
 - 📝 Open Markdown notes per level
 - 📂 Organized by game (`bandit`, `natas`, `leviathan`, etc.)
-- 🚀 Secure SSH launch with password guidance (no `sshpass`)
+- 📊 Track your progress across all games with `otw status`
+- 🚀 Secure SSH launch with automatic clipboard copy (using `fip`)
 - ☁️ Git push your notes and password progress (optional)
 - 🔧 Configurable vault location with zero dependencies
 
@@ -65,9 +66,14 @@ otw note <wargame> <level>
 otw ls <wargame>
 ```
 
+### 📊 Check your progress
+```bash
+otw status  # Shows highest level reached for each game
+```
+
 ### 🔐 SSH into level
 ```bash
-otw ssh <wargame> <level> 
+otw ssh <wargame> <level>  # Auto-copies password to clipboard via fip
 ```
 
 ### ☁️ Git push notes and passwords
@@ -166,22 +172,29 @@ No crash. Just guidance.
 
 ## ✅ Supported Games
 
-- `bandit`
+All OverTheWire wargames are supported! SSH ports are pre-configured for each game.
 
-## ❌ Currenly Unsupported
-- `natas`
-- `leviathan`
-- `krypton`
-- `narnia`
-- `behemoth`
-- `utumno`
-- `maze`
-- `vortex`
-- `manpage`
-- `drifter`
-- `formulaone`
+### 🔐 SSH-based Games
+| Game | Port | Status |
+|------|------|--------|
+| `bandit` | 2220 | ✅ Fully supported |
+| `leviathan` | 2223 | ✅ Fully supported |
+| `narnia` | 2226 | ✅ Fully supported |
+| `behemoth` | 2221 | ✅ Fully supported |
+| `utumno` | 2227 | ✅ Fully supported |
+| `maze` | 2225 | ✅ Fully supported |
+| `manpage` | 2224 | ✅ Fully supported |
+| `formulaone` | 2232 | ✅ Fully supported |
+| `vortex` | 2228 | ✅ Fully supported |
+| `drifter` | 2230 | ✅ Fully supported |
+| `krypton` | 2231 | ✅ Fully supported |
 
-> Don’t see your favorite game? Edit the `WARGAMES` list in `cli.py`.
+### 🌐 Web-based Games
+| Game | Access Method | Status |
+|------|---------------|--------|
+| `natas` | Web browser | ✅ Password/note storage only |
+
+> Note: For `natas`, use `otw save` and `otw pw` to manage passwords, but SSH is not available.
 
 ---
 
@@ -190,6 +203,7 @@ No crash. Just guidance.
 - Python 3.7+
 - OpenSSH client (`ssh`)
 - `git` (for version control)
+- `fip` (for clipboard support) - [fip installation guide](https://github.com/yourusername/fip)
 
 ---
 
