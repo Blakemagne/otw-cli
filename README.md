@@ -17,7 +17,7 @@
 ## 📦 Installation
 
 ```bash
-git clone https://github.com/yourusername/otw-cli.git
+git clone https://github.com/Blakemagne/otw-cli.git
 cd otw-cli
 pip install -e .
 ```
