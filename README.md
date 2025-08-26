@@ -203,7 +203,10 @@ All OverTheWire wargames are supported! SSH ports are pre-configured for each ga
 - Python 3.7+
 - OpenSSH client (`ssh`)
 - `git` (for version control)
-- `fip` (for clipboard support) - [fip installation guide](https://github.com/Blakemagne/fip-fop)
+- `fip` (for clipboard support) - **automatically installed during setup!**
+
+> 💡 `fip` will be installed automatically when you run `pip install -e .`  
+> Manual install: `curl -fsSL https://raw.githubusercontent.com/Blakemagne/fip/main/install.sh | sh`
 
 ---
 
